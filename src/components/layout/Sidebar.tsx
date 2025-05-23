@@ -19,8 +19,10 @@ import {
   Building2,
   ChevronLeft,
   ChevronRight,
-  Menu
+  Menu,
+  LogOut
 } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
@@ -34,6 +36,11 @@ const navigation = [
 export function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const location = useLocation();
+  const { signOut, user } = useAuth();
+
+  const handleSignOut = async () => {
+    await signOut();
+  };
 
   const NavigationItem = ({ item }: { item: typeof navigation[0] }) => {
     const isActive = location.pathname === item.href;
@@ -137,13 +144,46 @@ export function Sidebar() {
         </nav>
 
         {/* Footer */}
-        {!isCollapsed && (
-          <div className="px-4 py-4 border-t border-gray-200">
-            <p className="text-xs text-gray-500">
-              AssetPrism v1.0.0
-            </p>
-          </div>
-        )}
+        <div className="px-4 py-4 border-t border-gray-200">
+          {!isCollapsed && (
+            <>
+              <div className="mb-3">
+                <p className="text-sm text-gray-700 truncate">
+                  {user?.email}
+                </p>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleSignOut}
+                className="w-full justify-start gap-2 text-gray-600 hover:text-gray-900"
+              >
+                <LogOut className="h-4 w-4" />
+                Sign Out
+              </Button>
+              <p className="text-xs text-gray-500 mt-3">
+                AssetPrism v1.0.0
+              </p>
+            </>
+          )}
+          {isCollapsed && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleSignOut}
+                  className="w-full h-8 p-0 text-gray-600 hover:text-gray-900"
+                >
+                  <LogOut className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="right" className="ml-2">
+                <p>Sign Out</p>
+              </TooltipContent>
+            </Tooltip>
+          )}
+        </div>
       </div>
     </TooltipProvider>
   );
